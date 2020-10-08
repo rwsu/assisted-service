@@ -51,6 +51,7 @@ pipeline {
             when { branch 'master'}
             steps {
                 sh "docker login quay.io -u ${QUAY_IO_CREDS_USR} -p ${QUAY_IO_CREDS_PSW}"
+                sh "podman login quay.io -u ${QUAY_IO_CREDS_USR} -p ${QUAY_IO_CREDS_PSW}"
                 sh "make publish"
             }
         }
