@@ -116,7 +116,10 @@ generate-keys: $(BUILD_FOLDER)
 .PHONY: build docs
 build: lint unit-test build-minimal build-iso-generator
 
-build-all: build-image build-minimal-assisted-iso-generator-image build-onprem
+build-all: build-in-docker build-onprem
+
+build-in-docker:
+	skipper make build-image build-minimal-assisted-iso-generator-image
 
 build-minimal: $(BUILD_FOLDER)
 	CGO_ENABLED=0 go build -o $(BUILD_FOLDER)/assisted-service cmd/main.go
@@ -124,7 +127,7 @@ build-minimal: $(BUILD_FOLDER)
 build-iso-generator: $(BUILD_FOLDER)
 	CGO_ENABLED=0 go build -o $(BUILD_FOLDER)/assisted-iso-create assisted-iso-create/main.go
 
-build-onprem:
+build-onprem: build-in-docker
 	podman pull $(ISO_CREATION_DOCKER_DAEMON_PULL_STRING)
 	podman pull $(ASSISTED_SERVICE_DOCKER_DAEMON_PULL_STRING)
 	podman build $(CONTAINER_BUILD_PARAMS) --build-arg RHCOS_VERSION=${RHCOS_VERSION} -f Dockerfile.assisted-service-onprem . -t $(SERVICE_ONPREM)
