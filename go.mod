@@ -14,7 +14,7 @@ require (
 	github.com/danielerez/go-dns-client v0.0.0-20200630114514-0b60d1703f0b
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/filanov/stateswitch v0.0.0-20200714113403-51a42a34c604
-	github.com/go-acme/lego v2.7.2+incompatible
+	github.com/go-acme/lego v2.7.2+incompatible // indirect
 	github.com/go-openapi/errors v0.19.6
 	github.com/go-openapi/loads v0.19.5
 	github.com/go-openapi/runtime v0.19.20
@@ -51,6 +51,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200909081042-eff7692f9009 // indirect
 	golang.org/x/tools v0.0.0-20200914190812-8f9ed77dd8e5 // indirect
+	gopkg.in/gormigrate.v1 v1.6.0
 	gopkg.in/square/go-jose.v2 v2.2.2
 	gopkg.in/yaml.v2 v2.3.0
 	honnef.co/go/tools v0.0.1-2020.1.5 // indirect
