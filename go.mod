@@ -26,6 +26,7 @@ require (
 	github.com/golang/mock v1.4.3
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/google/uuid v1.1.1
+	github.com/iancoleman/strcase v0.1.2
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kennygrant/sanitize v1.2.4
