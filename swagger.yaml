@@ -2465,8 +2465,10 @@ paths:
           schema:
             $ref: '#/definitions/assisted-service-iso-create-params'
       responses:
-        201:
+        200:
           description: Success.
+          schema:
+            $ref: '#/definitions/presigned'
         400:
           description: Error.
           schema:

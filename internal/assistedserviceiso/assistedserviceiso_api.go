@@ -96,7 +96,12 @@ func (a *assistedServiceISOApi) CreateISOAndUploadToS3(ctx context.Context, para
 		return common.NewApiError(http.StatusInternalServerError, err)
 	}
 
-	return assisted_service_iso.NewCreateISOAndUploadToS3Created()
+	// If service is running on AWS S3, generate the presigned URL and return it
+	if a.objectHandler.IsAwsS3() {
+		return a.GetPresignedForAssistedServiceISO(ctx, assisted_service_iso.NewGetPresignedForAssistedServiceISOParams())
+	}
+
+	return assisted_service_iso.NewCreateISOAndUploadToS3OK()
 }
 
 /* DownloadISO Downloads the ISO for the user from S3. */

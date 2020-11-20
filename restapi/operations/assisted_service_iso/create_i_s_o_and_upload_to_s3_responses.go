@@ -13,28 +13,48 @@ import (
 	"github.com/openshift/assisted-service/models"
 )
 
-// CreateISOAndUploadToS3CreatedCode is the HTTP code returned for type CreateISOAndUploadToS3Created
-const CreateISOAndUploadToS3CreatedCode int = 201
+// CreateISOAndUploadToS3OKCode is the HTTP code returned for type CreateISOAndUploadToS3OK
+const CreateISOAndUploadToS3OKCode int = 200
 
-/*CreateISOAndUploadToS3Created Success.
+/*CreateISOAndUploadToS3OK Success.
 
-swagger:response createISOAndUploadToS3Created
+swagger:response createISOAndUploadToS3OK
 */
-type CreateISOAndUploadToS3Created struct {
+type CreateISOAndUploadToS3OK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Presigned `json:"body,omitempty"`
 }
 
-// NewCreateISOAndUploadToS3Created creates CreateISOAndUploadToS3Created with default headers values
-func NewCreateISOAndUploadToS3Created() *CreateISOAndUploadToS3Created {
+// NewCreateISOAndUploadToS3OK creates CreateISOAndUploadToS3OK with default headers values
+func NewCreateISOAndUploadToS3OK() *CreateISOAndUploadToS3OK {
 
-	return &CreateISOAndUploadToS3Created{}
+	return &CreateISOAndUploadToS3OK{}
+}
+
+// WithPayload adds the payload to the create i s o and upload to s3 o k response
+func (o *CreateISOAndUploadToS3OK) WithPayload(payload *models.Presigned) *CreateISOAndUploadToS3OK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the create i s o and upload to s3 o k response
+func (o *CreateISOAndUploadToS3OK) SetPayload(payload *models.Presigned) {
+	o.Payload = payload
 }
 
 // WriteResponse to the client
-func (o *CreateISOAndUploadToS3Created) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *CreateISOAndUploadToS3OK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
-	rw.WriteHeader(201)
+	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 // CreateISOAndUploadToS3BadRequestCode is the HTTP code returned for type CreateISOAndUploadToS3BadRequest

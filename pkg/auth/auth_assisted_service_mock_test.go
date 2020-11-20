@@ -279,7 +279,7 @@ func (f fakeManagedDomainsAPI) ListManagedDomains(
 type fakeAssistedServiceIsoAPI struct{}
 
 func (f fakeAssistedServiceIsoAPI) CreateISOAndUploadToS3(ctx context.Context, params assisted_service_iso.CreateISOAndUploadToS3Params) middleware.Responder {
-	return assisted_service_iso.NewCreateISOAndUploadToS3Created()
+	return assisted_service_iso.NewCreateISOAndUploadToS3OK()
 }
 
 func (f fakeAssistedServiceIsoAPI) DownloadISO(ctx context.Context, params assisted_service_iso.DownloadISOParams) middleware.Responder {

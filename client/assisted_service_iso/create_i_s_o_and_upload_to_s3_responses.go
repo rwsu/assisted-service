@@ -23,8 +23,8 @@ type CreateISOAndUploadToS3Reader struct {
 // ReadResponse reads a server response into the received o.
 func (o *CreateISOAndUploadToS3Reader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 201:
-		result := NewCreateISOAndUploadToS3Created()
+	case 200:
+		result := NewCreateISOAndUploadToS3OK()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -59,23 +59,35 @@ func (o *CreateISOAndUploadToS3Reader) ReadResponse(response runtime.ClientRespo
 	}
 }
 
-// NewCreateISOAndUploadToS3Created creates a CreateISOAndUploadToS3Created with default headers values
-func NewCreateISOAndUploadToS3Created() *CreateISOAndUploadToS3Created {
-	return &CreateISOAndUploadToS3Created{}
+// NewCreateISOAndUploadToS3OK creates a CreateISOAndUploadToS3OK with default headers values
+func NewCreateISOAndUploadToS3OK() *CreateISOAndUploadToS3OK {
+	return &CreateISOAndUploadToS3OK{}
 }
 
-/*CreateISOAndUploadToS3Created handles this case with default header values.
+/*CreateISOAndUploadToS3OK handles this case with default header values.
 
 Success.
 */
-type CreateISOAndUploadToS3Created struct {
+type CreateISOAndUploadToS3OK struct {
+	Payload *models.Presigned
 }
 
-func (o *CreateISOAndUploadToS3Created) Error() string {
-	return fmt.Sprintf("[POST /assisted-service-iso][%d] createISOAndUploadToS3Created ", 201)
+func (o *CreateISOAndUploadToS3OK) Error() string {
+	return fmt.Sprintf("[POST /assisted-service-iso][%d] createISOAndUploadToS3OK  %+v", 200, o.Payload)
 }
 
-func (o *CreateISOAndUploadToS3Created) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *CreateISOAndUploadToS3OK) GetPayload() *models.Presigned {
+	return o.Payload
+}
+
+func (o *CreateISOAndUploadToS3OK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Presigned)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

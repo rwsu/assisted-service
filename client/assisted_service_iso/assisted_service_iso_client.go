@@ -20,7 +20,7 @@ import (
 type API interface {
 	/*
 	   CreateISOAndUploadToS3 creates i s o for the user and uploads to s3*/
-	CreateISOAndUploadToS3(ctx context.Context, params *CreateISOAndUploadToS3Params) (*CreateISOAndUploadToS3Created, error)
+	CreateISOAndUploadToS3(ctx context.Context, params *CreateISOAndUploadToS3Params) (*CreateISOAndUploadToS3OK, error)
 	/*
 	   DownloadISO downloads the assisted service i s o*/
 	DownloadISO(ctx context.Context, params *DownloadISOParams, writer io.Writer) (*DownloadISOOK, error)
@@ -50,7 +50,7 @@ type Client struct {
 /*
 CreateISOAndUploadToS3 creates i s o for the user and uploads to s3
 */
-func (a *Client) CreateISOAndUploadToS3(ctx context.Context, params *CreateISOAndUploadToS3Params) (*CreateISOAndUploadToS3Created, error) {
+func (a *Client) CreateISOAndUploadToS3(ctx context.Context, params *CreateISOAndUploadToS3Params) (*CreateISOAndUploadToS3OK, error) {
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
 		ID:                 "CreateISOAndUploadToS3",
@@ -68,7 +68,7 @@ func (a *Client) CreateISOAndUploadToS3(ctx context.Context, params *CreateISOAn
 	if err != nil {
 		return nil, err
 	}
-	return result.(*CreateISOAndUploadToS3Created), nil
+	return result.(*CreateISOAndUploadToS3OK), nil
 
 }
 
