@@ -3,7 +3,6 @@ package s3wrapper
 import (
 	"bytes"
 	"context"
-	"encoding/binary"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -21,7 +20,6 @@ import (
 
 const minimumPartSizeBytes = 5 * 1024 * 1024    // 5MB
 const copyPartChunkSizeBytes = 64 * 1024 * 1024 // 64MB
-const coreISOMagic = "coreiso+"
 
 type ISOUploaderAPI interface {
 	UploadISO(ctx context.Context, ignitionConfig, srcObjectName, destObjectName string) error
@@ -171,14 +169,12 @@ func (u *ISOUploader) getISOHeaderInfo(log logrus.FieldLogger, baseObjectName st
 		return
 	}
 
-	res := bytes.Compare(headerString[0:8], []byte(coreISOMagic))
-	if res != 0 {
-		err = errors.New(fmt.Sprintf("Could not find magic string in object header (%s)", headerString[0:8]))
+	ignOffsetInfo, err := isoeditor.GetIgnitionArea(headerString)
+	if err != nil {
 		return
 	}
-
-	offset = int64(binary.LittleEndian.Uint64(headerString[8:16]))
-	length = int64(binary.LittleEndian.Uint64(headerString[16:24]))
+	offset = int64(ignOffsetInfo.Offset)
+	length = int64(ignOffsetInfo.Length)
 
 	// For now we assume that the embedded area is less than 5MB, which is the minimum S3 part size
 	if length > int64(minimumPartSizeBytes) {
