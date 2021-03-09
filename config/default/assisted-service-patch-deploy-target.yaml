@@ -14,3 +14,6 @@ spec:
         - name: DEPLOY_TARGET
           value: k8s
         name: assisted-service
+        - name: STORAGE
+          value: s3
+        name: assisted-service

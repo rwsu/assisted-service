@@ -47,18 +47,23 @@ patchesStrategicMerge:
 # Sets ISO_IMAGE_TYPE to minimal-iso 
 - assisted-service-patch-iso-image-type.yaml
 
-# TODO: Remove when filesystem is ready
-# Uncomment to set the DEPLOY_TARGET to "k8s". By default the DEPLOY_TARGET
-# for OCP clusters should be "ocp". For the "ocp" target we are aiming to use
-# s3 filesystem implementation. At the moment the switch to the s3 filesystem
-# implementation is not complete. In the interim, scality is deployed by the
-# operator and for assisted-service to be functional you will need to use "k8s"
-# as the DEPLOY_TARGET.
-- assisted-service-patch-deploy-target.yaml
+# Creates the volume and PersistentVolumeClaim for the filesystem client.
+# If using scality uncomment the assisted-service-patch-deploy-target.yaml 
+# and comment these out. In the generated config DEPLOY_TARGET is "ocp" and 
+# STORAGE is "filesystem".
+- assisted-service-patch-pvc-bucket-filesystem.yaml
+- assisted-service-path-volume-bucket-filesystem.yaml
 
 ###################
 # Optional patches
 ###################
+# Uncomment to set DEPLOY_TARGET to "k8s" and STORAGE to "s3" and select 
+# the scality client. When using the  scality client you can comment out 
+# the bucket-filesystem patches above. By default the DEPLOY_TARGET
+# for OCP clusters should be "ocp". For the "ocp" target we are aiming to use
+# s3 filesystem implementation. 
+#- assisted-service-patch-deploy-target.yaml
+
 # Uncomment to set a mininum disk size allowed by the hardware validator.
 # By default the minimum disk size allowed is 120GB. The patch sets the
 # minimum disk size to 20GB.
