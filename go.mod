@@ -33,7 +33,7 @@ require (
 	github.com/google/go-cmp v0.5.6
 	github.com/google/renameio v0.1.0
 	github.com/google/uuid v1.3.0
-	github.com/hashicorp/go-multierror v1.1.0
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.2.1
 	github.com/iancoleman/strcase v0.1.2
 	github.com/kelseyhightower/envconfig v1.4.0
