@@ -70,7 +70,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e
 	golang.org/x/tools v0.1.5 // indirect
-	gopkg.in/ini.v1 v1.51.0
+	gopkg.in/ini.v1 v1.66.4
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/postgres v1.2.1
