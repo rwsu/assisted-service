@@ -183,7 +183,7 @@ func (r *ClusterDeploymentsReconciler) Reconcile(origCtx context.Context, req ct
 	cluster, err := r.Installer.GetClusterByKubeKey(req.NamespacedName)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		if !isInstalled(clusterDeployment, clusterInstall) {
-			return r.createNewCluster(ctx, log, req.NamespacedName, clusterDeployment, clusterInstall)
+			return r.CreateNewCluster(ctx, log, req.NamespacedName, clusterDeployment, clusterInstall)
 		}
 		if !r.isSNO(clusterInstall) {
 			return r.createNewDay2Cluster(ctx, log, req.NamespacedName, clusterDeployment, clusterInstall)
@@ -1058,7 +1058,7 @@ func (r *ClusterDeploymentsReconciler) isSNO(clusterInstall *hiveext.AgentCluste
 		clusterInstall.Spec.ProvisionRequirements.WorkerAgents == 0
 }
 
-func (r *ClusterDeploymentsReconciler) createNewCluster(
+func (r *ClusterDeploymentsReconciler) CreateNewCluster(
 	ctx context.Context,
 	log logrus.FieldLogger,
 	key types.NamespacedName,
@@ -1068,13 +1068,14 @@ func (r *ClusterDeploymentsReconciler) createNewCluster(
 	log.Infof("Creating a new cluster %s %s", clusterDeployment.Name, clusterDeployment.Namespace)
 	spec := clusterDeployment.Spec
 
-	pullSecret, err := getPullSecretData(ctx, r.Client, r.APIReader, spec.PullSecretRef, key.Namespace)
+	pullSecret, err := getPullSecretData(ctx, r.Client, r.APIReader, clusterDeployment.Spec.PullSecretRef, key.Namespace)
 	if err != nil {
 		log.WithError(err).Error("failed to get pull secret")
 		return r.updateStatus(ctx, log, clusterInstall, nil, err)
 	}
 
 	releaseImage, err := r.addReleaseImage(ctx, clusterInstall.Spec, pullSecret, nil)
+
 	if err != nil {
 		log.WithError(err)
 		_, _ = r.updateStatus(ctx, log, clusterInstall, nil, err)

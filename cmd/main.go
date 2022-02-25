@@ -15,6 +15,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/openshift/assisted-service/internal/billi"
 	"github.com/openshift/assisted-service/internal/bminventory"
 	"github.com/openshift/assisted-service/internal/cluster"
 	"github.com/openshift/assisted-service/internal/cluster/validations"
@@ -186,6 +187,7 @@ func maxDuration(dur time.Duration, durations ...time.Duration) time.Duration {
 func main() {
 	err := envconfig.Process(common.EnvConfigPrefix, &Options)
 	log := InitLogs()
+	log.Infoln("RWSU main start")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -546,6 +548,36 @@ func main() {
 			log.Infof("Starting controllers")
 			failOnError(ctrlMgr.Start(ctrl.SetupSignalHandler()), "failed to run manager")
 		}
+	}()
+
+	go func() {
+		log.Infoln("RWSU create reconcilers")
+		infraEnvReconciler := controllers.InfraEnvReconciler{
+			Client:           ctrlMgr.GetClient(),
+			APIReader:        ctrlMgr.GetAPIReader(),
+			Config:           Options.InfraEnvConfig,
+			Log:              log,
+			Installer:        bm,
+			CRDEventsHandler: crdEventsHandler,
+			ServiceBaseURL:   Options.BMConfig.ServiceBaseURL,
+			AuthType:         Options.Auth.AuthType,
+		}
+		cdReconciler := controllers.ClusterDeploymentsReconciler{
+			Client:           ctrlMgr.GetClient(),
+			APIReader:        ctrlMgr.GetAPIReader(),
+			Log:              log,
+			Scheme:           ctrlMgr.GetScheme(),
+			Installer:        bm,
+			ClusterApi:       clusterApi,
+			HostApi:          hostApi,
+			CRDEventsHandler: crdEventsHandler,
+			Manifests:        manifestsApi,
+			ServiceBaseURL:   Options.BMConfig.ServiceBaseURL,
+			AuthType:         Options.Auth.AuthType,
+		}
+		log.Infoln("RWSU after create reconciler")
+		billi.LoadZTPmanifests(log, cdReconciler, infraEnvReconciler)
+		log.Infoln("RWSU after LoadZTPmanifest")
 	}()
 
 	address := fmt.Sprintf(":%s", swag.StringValue(port))
