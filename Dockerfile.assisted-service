@@ -48,6 +48,15 @@ COPY --from=builder /build/assisted-service-operator /assisted-service-operator
 COPY --from=builder /build/assisted-service-admission /assisted-service-admission
 COPY --from=pybuilder /assisted-service/build/dist/* /clients/
 COPY /config/onprem-iso-config.ign /data/onprem-iso-config.ign
+
+# TODO: BILLI, the yaml files should be mounted into the assisted-service
+# container and not copied as you see here. For development testing, we 
+# have them in deploy and copying them over to image in the build. 
+COPY /deploy/infraenv.yaml /data/infraenv.yaml
+COPY /deploy/cluster-deployment.yaml /data/cluster-deployment.yaml
+COPY /deploy/agent-cluster-install.yaml /data/agent-cluster-install.yaml
+COPY /deploy/pull-secret.yaml /data/pull-secret.yaml
+
 ENV GODEBUG=madvdontneed=1
 ENV GOGC=50
 CMD ["/assisted-service"]

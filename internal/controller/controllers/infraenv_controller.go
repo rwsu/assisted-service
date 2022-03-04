@@ -322,18 +322,11 @@ func (r *InfraEnvReconciler) ensureISO(ctx context.Context, log logrus.FieldLogg
 	return r.updateEnsureISOSuccess(ctx, log, infraEnv, updatedInfraEnv)
 }
 
-func (r *InfraEnvReconciler) createInfraEnv(ctx context.Context, log logrus.FieldLogger, key *types.NamespacedName, infraEnv *aiv1beta1.InfraEnv, cluster *common.Cluster) (*common.InfraEnv, error) {
-
-	pullSecret, err := getPullSecretData(ctx, r.Client, r.APIReader, infraEnv.Spec.PullSecretRef, key.Namespace)
-	if err != nil {
-		log.WithError(err).Error("failed to get pull secret")
-		return nil, err
-	}
-
+func CreateInfraEnvParams(infraEnv *aiv1beta1.InfraEnv, cluster *common.Cluster, key *types.NamespacedName, imageType models.ImageType, pullSecret string) installer.RegisterInfraEnvParams {
 	createParams := installer.RegisterInfraEnvParams{
 		InfraenvCreateParams: &models.InfraEnvCreateParams{
 			Name:                   &key.Name,
-			ImageType:              r.Config.ImageType,
+			ImageType:              imageType,
 			IgnitionConfigOverride: infraEnv.Spec.IgnitionConfigOverride,
 			PullSecret:             &pullSecret,
 			SSHAuthorizedKey:       &infraEnv.Spec.SSHAuthorizedKey,
@@ -356,6 +349,20 @@ func (r *InfraEnvReconciler) createInfraEnv(ctx context.Context, log logrus.Fiel
 		createParams.InfraenvCreateParams.ClusterID = cluster.ID
 		createParams.InfraenvCreateParams.OpenshiftVersion = cluster.OpenshiftVersion
 	}
+
+	return createParams
+}
+
+func (r *InfraEnvReconciler) createInfraEnv(ctx context.Context, log logrus.FieldLogger, key *types.NamespacedName, infraEnv *aiv1beta1.InfraEnv, cluster *common.Cluster) (*common.InfraEnv, error) {
+
+	pullSecret, err := getPullSecretData(ctx, r.Client, r.APIReader, infraEnv.Spec.PullSecretRef, key.Namespace)
+	if err != nil {
+		log.WithError(err).Error("failed to get pull secret")
+		return nil, err
+	}
+
+	createParams := CreateInfraEnvParams(infraEnv, cluster, key, r.Config.ImageType, pullSecret)
+
 	staticNetworkConfig, err := r.processNMStateConfig(ctx, log, infraEnv)
 	if err != nil {
 		return nil, err

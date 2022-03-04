@@ -15,6 +15,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/openshift/assisted-service/internal/billi"
 	"github.com/openshift/assisted-service/internal/bminventory"
 	"github.com/openshift/assisted-service/internal/cluster"
 	"github.com/openshift/assisted-service/internal/cluster/validations"
@@ -546,6 +547,11 @@ func main() {
 			log.Infof("Starting controllers")
 			failOnError(ctrlMgr.Start(ctrl.SetupSignalHandler()), "failed to run manager")
 		}
+	}()
+
+	// TODO: Add Option to only run BILLI assisted-service
+	go func() {
+		billi.LoadZTPmanifests(log, bm, db)
 	}()
 
 	address := fmt.Sprintf(":%s", swag.StringValue(port))
