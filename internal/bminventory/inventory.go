@@ -1605,7 +1605,7 @@ func (b *bareMetalInventory) UpdateClusterInstallConfigInternal(ctx context.Cont
 	tx := b.db.Begin()
 	defer func() {
 		if !txSuccess {
-			log.Error("UpdateClusterInstallConfigInternal failed")
+			log.Errorf("UpdateClusterInstallConfigInternal failed %v", tx.Error)
 			tx.Rollback()
 		}
 		if r := recover(); r != nil {
@@ -1655,6 +1655,7 @@ func (b *bareMetalInventory) UpdateClusterInstallConfigInternal(ctx context.Cont
 		log.Error(err)
 		return nil, common.NewApiError(http.StatusInternalServerError, err)
 	}
+
 	txSuccess = true
 	if err == nil {
 		err = b.stream.Notify(ctx, cluster)

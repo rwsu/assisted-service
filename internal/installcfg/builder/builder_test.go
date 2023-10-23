@@ -621,7 +621,7 @@ aEA8gNEmV+rb7h1v0r3EwDQYJKoZIhvcNAQELBQAwYTELMAkGA1UEBhMCaXMxCzAJBgNVBAgMAmRk
 		err = json.Unmarshal(data, &result)
 		Expect(err).ShouldNot(HaveOccurred())
 		// test that VCenter.Username was marshalled correctly by GetInstallConfig
-		Expect(string(result.Platform.Vsphere.VCenters[0].Username)).Should(Equal("testUser"))		
+		Expect(string(result.Platform.Vsphere.VCenters[0].Username)).Should(Equal("testUser"))
 	})
 
 	Context("networking", func() {
