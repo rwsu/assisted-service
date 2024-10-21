@@ -123,6 +123,7 @@ func main() {
 	}
 }
 
+// Deprecated. New flow separates into two steps: registerCluster and registerInfraEnv.
 func register(ctx context.Context, log *log.Logger, bmInventory *client.AssistedInstall) string {
 	err := envconfig.Process("", &RegisterOptions)
 	if err != nil {
@@ -218,7 +219,11 @@ func registerInfraEnv(ctx context.Context, log *log.Logger, bmInventory *client.
 }
 
 func configure(ctx context.Context, log *log.Logger, bmInventory *client.AssistedInstall) {
-	err := envconfig.Process("", &ConfigureOptions)
+	err := envconfig.Process("", &RegisterOptions)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	err = envconfig.Process("", &ConfigureOptions)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -252,7 +257,14 @@ func configure(ctx context.Context, log *log.Logger, bmInventory *client.Assiste
 			log.Fatal("Unable to record failures to disk: ", err)
 		}
 	}
-	log.Info("Configured all hosts")
+
+	log.Info("Checking role assignments")
+	err = agentbasedinstaller.AlignHostRolesToControlPlaneReplicas(ctx, log, bmInventory, RegisterOptions.AgentClusterInstallFile, strfmt.UUID(ConfigureOptions.InfraEnvID))
+	if err != nil {
+		log.Fatalf("Failed to align roles: %v", err)
+	}
+
+	log.Info("RWSU Configured all hosts")
 }
 
 func importCluster(ctx context.Context, log *log.Logger, bmInventory *client.AssistedInstall) {

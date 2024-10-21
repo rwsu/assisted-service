@@ -105,12 +105,16 @@ func applyHostConfig(ctx context.Context, log *log.Logger, bmInventory *client.A
 		return nil
 	}
 
+	return updateHost(ctx, bmInventory, inventory, host, updateParams)
+}
+
+func updateHost(ctx context.Context, bmInventory *client.AssistedInstall, inventory *models.Inventory, host *models.Host, updateParams *models.HostUpdateParams) error {
 	log.Info("Updating host")
 	params := installer.NewV2UpdateHostParams().
 		WithHostID(*host.ID).
 		WithInfraEnvID(host.InfraEnvID).
 		WithHostUpdateParams(updateParams)
-	_, err = bmInventory.Installer.V2UpdateHost(ctx, params)
+	_, err := bmInventory.Installer.V2UpdateHost(ctx, params)
 	if err != nil {
 		if errorResponse, ok := err.(errorutil.AssistedServiceErrorAPI); ok {
 			return &UpdateFailure{
